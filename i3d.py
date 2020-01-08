@@ -353,11 +353,11 @@ def buildMyNet(sess, num_classes=101, is_training=True, dropout_keep_prob=0.5):
 	return predictions, inputs, drop_out, loss, labels, opt_apply
 		
 
-def buildMyTestNet(sess, num_classes=101, is_training=False, dropout_keep_prob=1.0, restore_path=None):
+def buildMyTestNet(sess, num_classes=101, is_training=True, dropout_keep_prob=1.0, restore_path=None):
 	modelPath = restore_path
 	inputs = tf.placeholder(dtype=tf.float32, shape=[None, 64, 224, 224, 3])
 	net, end_points = I3D(inputs, final_endpoint='Mixed_5c', is_training=is_training)
-	with tf.variable_scope('MyI3D', reuse=True):
+	with tf.variable_scope('MyI3D'):
 		end_point = 'Logits'
 		with tf.variable_scope(end_point):
 			net = tf.nn.avg_pool3d(net, ksize=[1, 2, 7, 7, 1],
