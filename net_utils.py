@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from batch_norm import bn_layer
 import tensorflow as tf
 import collections
 from scopes import *
@@ -27,7 +28,8 @@ def unit3D(inputs, output_channels,
                             padding=padding,
                             use_bias=use_bias)
     if use_batch_norm:
-        net = tf.contrib.layers.batch_norm(net, is_training=is_training)
+        #net = tf.contrib.layers.batch_norm(net, is_training=is_training)
+        net = bn_layer(net, is_training)
     if activation_fn is not None:
         net = activation_fn(net)
   return net

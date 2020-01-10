@@ -309,7 +309,7 @@ def I3D(inputs,
 
 def buildMyNet(sess, num_classes=101, is_training=True, dropout_keep_prob=0.5):
 	modelPath = './weights/model.ckpt'
-	inputs = tf.placeholder(dtype=tf.float32, shape=[8, None, 224, 224, 3])
+	inputs = tf.placeholder(dtype=tf.float32, shape=[16, None, 224, 224, 3])
 	drop_out = tf.placeholder(dtype=tf.float32, shape=None)
 	net, end_points = I3D(inputs, final_endpoint='Mixed_5c', is_training=is_training)
 	with tf.variable_scope('MyI3D'):
@@ -344,7 +344,7 @@ def buildMyNet(sess, num_classes=101, is_training=True, dropout_keep_prob=0.5):
 	# show all vars
 	print('----------------variables to restore--------------------')
 	allVars = tf.global_variables()
-	feed_dict = {v.name[:-2]:v for v in allVars if 'MyI3D' not in v.name}
+	feed_dict = {v.name[:-2]:v for v in allVars if 'MyI3D' not in v.name and 'BatchNorm/gamma' not in v.name}
 	for k, v in feed_dict.items():
 		print(k, v)
 	saver = tf.train.Saver(var_list=feed_dict)
@@ -355,7 +355,7 @@ def buildMyNet(sess, num_classes=101, is_training=True, dropout_keep_prob=0.5):
 
 def buildMyTestNet(sess, num_classes=101, is_training=True, dropout_keep_prob=1.0, restore_path=None):
 	modelPath = restore_path
-	inputs = tf.placeholder(dtype=tf.float32, shape=[None, 64, 224, 224, 3])
+	inputs = tf.placeholder(dtype=tf.float32, shape=[None, 64, 224, 224, 3], name='inputs')
 	net, end_points = I3D(inputs, final_endpoint='Mixed_5c', is_training=is_training)
 	with tf.variable_scope('MyI3D'):
 		end_point = 'Logits'
@@ -405,3 +405,4 @@ if __name__ == '__main__':
 		res = sess.run([loss, pred], feed_dict={inputs:fake_v, drop_out:0.5, labels:fake_l})
 		print(res)
 	
+

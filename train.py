@@ -5,10 +5,11 @@ import numpy as np
 
 def train(epoch=10):
     sess = tf.Session()
-    dataflow = MyData('./data', batch_size=8)
+    bs = 16
+    dataflow = MyData('./data', batch_size=bs)
     tr_num = dataflow.get_train_num()
     te_num = dataflow.get_test_num()
-    pred, inputs, drop_out, loss, labels, opt = buildMyNet(sess)
+    pred, inputs, drop_out, loss, labels, opt = buildMyNet(sess, is_training=True)
     best_cost = 0.0
     cost = 0
     saver = tf.train.Saver()
@@ -16,7 +17,7 @@ def train(epoch=10):
     for i in range(epoch):
         for j in range(tr_num):
             batch_data = dataflow.next_train()
-            if batch_data[1].shape[0]<8:
+            if batch_data[1].shape[0]<bs:
                 continue
             cur_cost, _ = sess.run([loss, opt], {inputs:batch_data[0], labels:batch_data[1], drop_out:0.5})
             cost += cur_cost
@@ -26,7 +27,7 @@ def train(epoch=10):
         total_pass = 0
         for k in range(te_num):
             batch_data = dataflow.next_test()
-            if batch_data[1].shape[0]<8:
+            if batch_data[1].shape[0]<bs:
                 continue
             probs = sess.run(pred, {inputs:batch_data[0], drop_out:1.0})
             pred_labels = np.argmax(probs, axis=1)
@@ -48,3 +49,4 @@ def train(epoch=10):
 
 if __name__ == "__main__":
     train(epoch=100)
+
